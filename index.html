@@ -19,7 +19,16 @@
     #imagePreview { max-width: 100%; max-height: 100%; }
     canvas { width: 100%; height: 100%; object-fit: contain; }
   </style>
-  <script>const gameCopyrightData = {"highschool": {"jp": "©II,MZ/K/HSDDHP", "en": ""}, "queensblade": {"jp": "©HobbyJAPAN", "en": ""}, "ginei": {"jp": "©ＴＴＴＷＳ ©Ｋ", "en": ""}, "guruguru": {"jp": "©HE/SQEX,GRNP", "en": ""}, "tsukimichi": {"jp": "©A・A/T", "en": ""}, "sutobura": {"jp": "© G/K/P-SO", "en": ""}, "blacklagoon": {"jp": "Ⓒ2006, 2010 R, S/BLP", "en": ""}, "newgate": {"jp": "©K・A/G", "en": ""}, "kumo": {"jp": "©O,T/K/SISSWP", "en": ""}, "binan": {"jp": "© KU/KPA", "en": ""}, "ossan": {"jp": "©KK,HJ/2024 ONAP", "en": ""}, "doraemon": {"jp": "©藤子プロ", "en": "©Fujiko-Pro"}, "negima": {"jp": "©赤松健／講談社", "en": "© Ken Akamatsu / Kodansha Ltd."}, "maoretry": {"jp": "©KK,AM/F/DRC", "en": ""}, "arifure": {"jp": "©R,O/A", "en": ""}, "peter": {"jp": "ⒸH/F･PSE", "en": ""}, "slime": {"jp": "ⒸKM･SBCr/SLP2", "en": "©KM-SBCr/SLP2"}, "ansatsu": {"jp": "©M,O/AP", "en": ""}, "dragon": {"jp": "©C/F", "en": ""}, "kakegurui": {"jp": "©HK,TN/SQEX,K2", "en": ""}, "wixoss": {"jp": "© ＴＯＭＹ ©LRIG/ProjectWDA", "en": ""}, "tenken": {"jp": "©Y,L/M/RS", "en": ""}, "shinchan": {"jp": "©Ｕ／Ｆ ・ Ｓ ・ Ａ ・ Ａ", "en": ""}};</script>
+  <script>
+
+let shiftDown = false;
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Shift') shiftDown = true;
+});
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'Shift') shiftDown = false;
+});
+const gameCopyrightData = {"highschool": {"jp": "©II,MZ/K/HSDDHP", "en": ""}, "queensblade": {"jp": "©HobbyJAPAN", "en": ""}, "ginei": {"jp": "©ＴＴＴＷＳ ©Ｋ", "en": ""}, "guruguru": {"jp": "©HE/SQEX,GRNP", "en": ""}, "tsukimichi": {"jp": "©A・A/T", "en": ""}, "sutobura": {"jp": "© G/K/P-SO", "en": ""}, "blacklagoon": {"jp": "Ⓒ2006, 2010 R, S/BLP", "en": ""}, "newgate": {"jp": "©K・A/G", "en": ""}, "kumo": {"jp": "©O,T/K/SISSWP", "en": ""}, "binan": {"jp": "© KU/KPA", "en": ""}, "ossan": {"jp": "©KK,HJ/2024 ONAP", "en": ""}, "doraemon": {"jp": "©藤子プロ", "en": "©Fujiko-Pro"}, "negima": {"jp": "©赤松健／講談社", "en": "© Ken Akamatsu / Kodansha Ltd."}, "maoretry": {"jp": "©KK,AM/F/DRC", "en": ""}, "arifure": {"jp": "©R,O/A", "en": ""}, "peter": {"jp": "ⒸH/F･PSE", "en": ""}, "slime": {"jp": "ⒸKM･SBCr/SLP2", "en": "©KM-SBCr/SLP2"}, "ansatsu": {"jp": "©M,O/AP", "en": ""}, "dragon": {"jp": "©C/F", "en": ""}, "kakegurui": {"jp": "©HK,TN/SQEX,K2", "en": ""}, "wixoss": {"jp": "© ＴＯＭＹ ©LRIG/ProjectWDA", "en": ""}, "tenken": {"jp": "©Y,L/M/RS", "en": ""}, "shinchan": {"jp": "©Ｕ／Ｆ ・ Ｓ ・ Ａ ・ Ａ", "en": ""}};</script>
 </head>
 <body>
 <header>画像トリミングツール</header>
@@ -192,6 +201,15 @@ image.addEventListener('load', () => {
     responsive: true,
     restore: true,
     ready() { cropper.setDragMode('crop'); },
+    cropstart() {
+      if (shiftDown) {
+        const w = parseInt(document.getElementById('outputWidth').value) || 1080;
+        const h = parseInt(document.getElementById('outputHeight').value) || 1920;
+        cropper.setAspectRatio(w / h);
+      } else {
+        cropper.setAspectRatio(NaN);
+      }
+    },
     crop() { updatePreview(); }
   });
 });
