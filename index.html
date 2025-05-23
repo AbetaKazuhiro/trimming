@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>画像トリミングツール</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css" />
+  <style>
+    body { font-family: sans-serif; margin: 0; background: #eef3f9; }
+    header { background: #2196f3; color: white; text-align: center; padding: 1em; font-size: 20px; }
+    .container { display: flex; gap: 1em; padding: 1em; height: 1000px; }
+    .editor { background: white; padding: 1em; border-radius: 8px; flex: 2; display: flex; flex-direction: column; }
+    .previewer { background: white; padding: 1em; border-radius: 8px; flex: 1; display: flex; flex-direction: column; }
+    .image-area { flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid #ccc; max-height: 800px; }
+    .canvas-area { height: 390px; border: 1px solid #ccc; display: flex; justify-content: center; align-items: center; }
+    .controls label, .controls input, .controls select, .controls button { display: block; width: 100%; margin-top: 8px; }
+    #imagePreview { max-width: 100%; max-height: 100%; }
+    canvas { width: 100%; height: 100%; object-fit: contain; }
+  </style>
+  <script>
+
+let shiftDown = false;
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Shift') shiftDown = true;
+});
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'Shift') shiftDown = false;
+});
+
+
+let shiftDown = false;
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Shift') shiftDown = true;
+});
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'Shift') shiftDown = false;
+});
+const gameCopyrightData = {"highschool": {"jp": "©II,MZ/K/HSDDHP", "en": ""}, "queensblade": {"jp": "©HobbyJAPAN", "en": ""}, "ginei": {"jp": "©ＴＴＴＷＳ ©Ｋ", "en": ""}, "guruguru": {"jp": "©HE/SQEX,GRNP", "en": ""}, "tsukimichi": {"jp": "©A・A/T", "en": ""}, "sutobura": {"jp": "© G/K/P-SO", "en": ""}, "blacklagoon": {"jp": "Ⓒ2006, 2010 R, S/BLP", "en": ""}, "newgate": {"jp": "©K・A/G", "en": ""}, "kumo": {"jp": "©O,T/K/SISSWP", "en": ""}, "binan": {"jp": "© KU/KPA", "en": ""}, "ossan": {"jp": "©KK,HJ/2024 ONAP", "en": ""}, "doraemon": {"jp": "©藤子プロ", "en": "©Fujiko-Pro"}, "negima": {"jp": "©赤松健／講談社", "en": "© Ken Akamatsu / Kodansha Ltd."}, "maoretry": {"jp": "©KK,AM/F/DRC", "en": ""}, "arifure": {"jp": "©R,O/A", "en": ""}, "peter": {"jp": "ⒸH/F･PSE", "en": ""}, "slime": {"jp": "ⒸKM･SBCr/SLP2", "en": "©KM-SBCr/SLP2"}, "ansatsu": {"jp": "©M,O/AP", "en": ""}, "dragon": {"jp": "©C/F", "en": ""}, "kakegurui": {"jp": "©HK,TN/SQEX,K2", "en": ""}, "wixoss": {"jp": "© ＴＯＭＹ ©LRIG/ProjectWDA", "en": ""}, "tenken": {"jp": "©Y,L/M/RS", "en": ""}, "shinchan": {"jp": "©Ｕ／Ｆ ・ Ｓ ・ Ａ ・ Ａ", "en": ""}};</script>
+<script>const gameCopyrightData = {"highschool": {"jp": "©II,MZ/K/HSDDHP", "en": ""}, "queensblade": {"jp": "©HobbyJAPAN", "en": ""}, "ginei": {"jp": "©ＴＴＴＷＳ ©Ｋ", "en": ""}, "guruguru": {"jp": "©HE/SQEX,GRNP", "en": ""}, "tsukimichi": {"jp": "©A・A/T", "en": ""}, "sutobura": {"jp": "© G/K/P-SO", "en": ""}, "blacklagoon": {"jp": "Ⓒ2006, 2010 R, S/BLP", "en": ""}, "newgate": {"jp": "©K・A/G", "en": ""}, "kumo": {"jp": "©O,T/K/SISSWP", "en": ""}, "binan": {"jp": "© KU/KPA", "en": ""}, "ossan": {"jp": "©KK,HJ/2024 ONAP", "en": ""}, "doraemon": {"jp": "©藤子プロ", "en": "©Fujiko-Pro"}, "negima": {"jp": "©赤松健／講談社", "en": "© Ken Akamatsu / Kodansha Ltd."}, "maoretry": {"jp": "©KK,AM/F/DRC", "en": ""}, "arifure": {"jp": "©R,O/A", "en": ""}, "peter": {"jp": "ⒸH/F･PSE", "en": ""}, "slime": {"jp": "ⒸKM･SBCr/SLP2", "en": "©KM-SBCr/SLP2"}, "ansatsu": {"jp": "©M,O/AP", "en": ""}, "dragon": {"jp": "©C/F", "en": ""}, "kakegurui": {"jp": "©HK,TN/SQEX,K2", "en": ""}, "wixoss": {"jp": "© ＴＯＭＹ ©LRIG/ProjectWDA", "en": ""}, "tenken": {"jp": "©Y,L/M/RS", "en": ""}, "shinchan": {"jp": "©Ｕ／Ｆ ・ Ｓ ・ Ａ ・ Ａ", "en": ""}};</script>
+</head>
+<body>
+<header>画像トリミングツール</header>
+<input type="file" id="inputImage" accept="image/*" style="margin: 10px auto; display:block;" />
+<div class="container">
+  <div class="editor">
+    <div class="image-area"><img id="imagePreview"></div>
+    <div class="controls">
+      <label>出力サイズ:</label>
+      <input type="number" id="outputWidth" value="1080">
+      <input type="number" id="outputHeight" value="1920">
+
+      <label>ゲームタイトル:</label>
+      <select id="gameTitleSelect"></select>
+
+      <label>言語:</label>
+      <select id="languageSelect">
+        <option value="ja">日本語</option>
+        <option value="other">日本語以外</option>
+      </select>
+
+      <label>背景色:</label>
+      <select id="bgColor">
+        <option value="black">黒</option>
+        <option value="white">白</option>
+      </select>
+
+      <label>コピーライト:</label>
+      <input type="text" id="copyrightText" />
+
+      <label>コピーライト位置:</label>
+      <select id="copyrightPosition">
+        <option value="right-bottom">右下</option>
+        <option value="left-bottom">左下</option>
+        <option value="right-top">右上</option>
+        <option value="left-top">左上</option>
+      </select>
+
+      <label>コピーライトフォントサイズ（px）:</label>
+      <input type="number" id="copyrightFontSize" value="30" />
+
+      <label>コピーライト黒ふち太さ:</label>
+      <input type="number" id="copyrightStrokeWidth" value="3" />
+
+      <label>画像回転（度）:</label>
+      <input type="number" id="rotateDegrees" value="0" />
+
+      <label>最大ファイルサイズ（KB）:</label>
+      <input type="number" id="maxFileSize" value="500" />
+
+      <button onclick="downloadImage()">ダウンロード</button>
+    </div>
+  </div>
+  <div class="previewer">
+    <h3 style="text-align:center;">プレビュー</h3>
+    <div class="canvas-area"><canvas id="canvas"></canvas></div>
+  </div>
+</div>
+<script>
+let cropper;
+let originalFileName = 'trimmed_image';
+let currentLanguage = 'ja';
+const image = document.getElementById('imagePreview');
+const canvas = document.getElementById('canvas');
+
+function updateCopyright() {
+  const title = document.getElementById('gameTitleSelect').value;
+  const data = gameCopyrightData[title] || {};
+  document.getElementById('copyrightText').value = currentLanguage === 'ja' ? data.jp || '' : (data.en || data.jp || '');
+  updatePreview();
+}
+
+function updatePreview() {
+  const outputW = parseInt(document.getElementById('outputWidth').value);
+  const outputH = parseInt(document.getElementById('outputHeight').value);
+  const bgColor = document.getElementById('bgColor').value;
+  const copyright = document.getElementById('copyrightText').value;
+  const position = document.getElementById('copyrightPosition').value;
+  const fontSize = parseInt(document.getElementById('copyrightFontSize').value) || 16;
+  const strokeWidth = parseInt(document.getElementById('copyrightStrokeWidth').value) || 3;
+  const deg = parseInt(document.getElementById('rotateDegrees').value) || 0;
+  cropper.rotateTo(deg);
+
+  const cropped = cropper.getCroppedCanvas();
+  const cropW = cropped.width, cropH = cropped.height;
+  const scale = Math.min(outputW / cropW, outputH / cropH);
+
+  const temp = document.createElement('canvas');
+  temp.width = outputW; temp.height = outputH;
+  const ctx = temp.getContext('2d');
+  ctx.fillStyle = bgColor === 'white' ? 'white' : 'black';
+  ctx.fillRect(0, 0, outputW, outputH);
+
+  const newW = cropW * scale, newH = cropH * scale;
+  const offsetX = (outputW - newW) / 2, offsetY = (outputH - newH) / 2;
+  ctx.drawImage(cropped, 0, 0, cropW, cropH, offsetX, offsetY, newW, newH);
+
+  if (copyright) {
+    ctx.font = fontSize + 'px sans-serif';
+    ctx.lineWidth = strokeWidth;
+    ctx.strokeStyle = 'black';
+    ctx.fillStyle = 'white';
+    let x = 10, y = outputH - 10;
+    if (position.includes('top')) y = fontSize + 5;
+    if (position.includes('right')) x = outputW - ctx.measureText(copyright).width - 10;
+    ctx.strokeText(copyright, x, y);
+    ctx.fillText(copyright, x, y);
+  }
+
+  canvas.width = outputW;
+  canvas.height = outputH;
+  canvas.getContext('2d').drawImage(temp, 0, 0);
+}
+
+function downloadImage() {
+  const maxKB = parseInt(document.getElementById('maxFileSize').value);
+  let quality = 1.0;
+  const tryCompress = () => {
+    let dataURL = canvas.toDataURL('image/jpeg', quality);
+    let sizeKB = Math.ceil(dataURL.length * 0.75 / 1024);
+    if (sizeKB > maxKB && quality > 0.1) {
+      quality -= 0.05;
+      tryCompress();
+    } else {
+      const outputW = parseInt(document.getElementById('outputWidth').value);
+      const outputH = parseInt(document.getElementById('outputHeight').value);
+      const sizeTag = `${outputW}-${outputH}`;
+      let name = originalFileName.replace(/(_)?\d{3,4}-\d{3,4}$/, '');
+      name = name.replace(/(_)?$/, '_') + 'trim_' + sizeTag;
+      const link = document.createElement('a');
+      link.download = name + '.jpg';
+      link.href = dataURL;
+      link.click();
+    }
+  };
+  tryCompress();
+}
+
+document.getElementById('inputImage').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    originalFileName = file.name.split('.')[0];
+    const reader = new FileReader();
+    reader.onload = () => image.src = reader.result;
+    reader.readAsDataURL(file);
+  }
+});
+
+['outputWidth', 'outputHeight', 'bgColor', 'copyrightPosition', 'copyrightText',
+ 'copyrightFontSize', 'rotateDegrees', 'copyrightStrokeWidth'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updatePreview);
+});
+
+document.getElementById('languageSelect').addEventListener('change', (e) => {
+  currentLanguage = e.target.value;
+  updateCopyright();
+});
+const gameTitleSelect = document.getElementById('gameTitleSelect');
+gameTitleSelect.addEventListener('change', updateCopyright);
+gameTitleSelect.addEventListener('input', updateCopyright);
+
+image.addEventListener('load', () => {
+  if (cropper) cropper.destroy();
+  cropper = new Cropper(image, {
+    viewMode: 1,
+    aspectRatio: NaN,
+    movable: true,
+    cropBoxMovable: true,
+    cropBoxResizable: true,
+    zoomable: true,
+    autoCrop: true,
+    autoCropArea: 0.8,
+    responsive: true,
+    restore: true,
+    ready() { cropper.setDragMode('crop'); },
+    cropstart() {
+      const w = parseInt(document.getElementById('outputWidth').value) || 1080;
+      const h = parseInt(document.getElementById('outputHeight').value) || 1920;
+      const aspectRatio = w / h;
+      cropper.setAspectRatio(shiftDown ? aspectRatio : NaN);
+    },
+    cropstart() {
+      if (shiftDown) {
+        const w = parseInt(document.getElementById('outputWidth').value) || 1080;
+        const h = parseInt(document.getElementById('outputHeight').value) || 1920;
+        cropper.setAspectRatio(w / h);
+      } else {
+        cropper.setAspectRatio(NaN);
+      }
+    },
+    crop() { updatePreview(); }
+  });
+});
+
+window.onload = () => {
+  const select = document.getElementById('gameTitleSelect');
+  Object.keys(gameCopyrightData).forEach(title => {
+    const option = document.createElement('option');
+    option.value = title;
+    option.textContent = title;
+    select.appendChild(option);
+  });
+  select.value = "highschool";
+  updateCopyright();
+};
+</script>
+</body>
+</html>
